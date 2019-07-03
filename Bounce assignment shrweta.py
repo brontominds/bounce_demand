@@ -1,249 +1,248 @@
-#!/usr/bin/env python
-# coding: utf-8
+	#!/usr/bin/env python
+	# coding: utf-8
 
-# In[35]:
+	# In[35]:
 
+def shrweta():
+	import pandas as pd
 
-import pandas as pd
 
+	# In[36]:
 
-# In[36]:
 
+	data=pd.read_csv("train.csv")#Making it Relative Path -Mayank
 
-data=pd.read_csv("train.csv")#Making it Relative Path -Mayank
 
+	# In[37]:
 
-# In[37]:
 
+	data.head()
 
-data.head()
 
+	# In[38]:
 
-# In[38]:
 
+	data.info()
 
-data.info()
 
+	# In[39]:
 
-# In[39]:
 
+	import matplotlib.pyplot as plt  # For plotting graphs 
+	from datetime import datetime    # To access datetime 
+	from pandas import Series        # To work on series 
+	get_ipython().run_line_magic('matplotlib', 'inline')
 
-import matplotlib.pyplot as plt  # For plotting graphs 
-from datetime import datetime    # To access datetime 
-from pandas import Series        # To work on series 
-get_ipython().run_line_magic('matplotlib', 'inline')
 
+	# In[40]:
 
-# In[40]:
 
+	data.dtypes
 
-data.dtypes
 
+	# In[41]:
 
-# In[41]:
 
+	data.shape
 
-data.shape
 
+	# In[42]:
 
-# In[42]:
 
+	data['datetime'] = pd.to_datetime(data['datetime'], errors='coerce')
 
-data['datetime'] = pd.to_datetime(data['datetime'], errors='coerce')
 
+	# In[43]:
 
-# In[43]:
 
+	data['year'] = data['datetime'].dt.year 
+	data['month'] = data['datetime'].dt.month 
+	data['day'] = data['datetime'].dt.day 
+	data['hour'] = data['datetime'].dt.hour 
 
-data['year'] = data['datetime'].dt.year 
-data['month'] = data['datetime'].dt.month 
-data['day'] = data['datetime'].dt.day 
-data['hour'] = data['datetime'].dt.hour 
 
+	# In[44]:
 
-# In[44]:
 
+	data.head()
 
-data.head()
 
+	# In[45]:
 
-# In[45]:
 
+	data['weather'].replace(1, 'Clear',inplace=True) 
+	data['weather'].replace(2, 'Mist',inplace=True)
+	data['weather'].replace(3, 'Light snow',inplace=True) 
+	data['weather'].replace(4, 'Heavy rain',inplace=True)
 
-data['weather'].replace(1, 'Clear',inplace=True) 
-data['weather'].replace(2, 'Mist',inplace=True)
-data['weather'].replace(3, 'Light snow',inplace=True) 
-data['weather'].replace(4, 'Heavy rain',inplace=True)
 
+	# In[46]:
 
-# In[46]:
 
+	data.head()
 
-data.head()
 
+	# In[47]:
 
-# In[47]:
 
+	data['season'].replace(1, 'Spring',inplace=True) 
+	data['season'].replace(2, 'Summer',inplace=True)
+	data['season'].replace(3, 'Fall',inplace=True) 
+	data['season'].replace(4, 'Winter',inplace=True)
 
-data['season'].replace(1, 'Spring',inplace=True) 
-data['season'].replace(2, 'Summer',inplace=True)
-data['season'].replace(3, 'Fall',inplace=True) 
-data['season'].replace(4, 'Winter',inplace=True)
 
+	# In[48]:
 
-# In[48]:
 
+	data.head()
 
-data.head()
 
+	# In[49]:
 
-# In[49]:
 
+	X = data.drop('datetime',1)
 
-X = data.drop('datetime',1)
 
+	# In[50]:
 
-# In[50]:
 
+	X.head()
 
-X.head()
 
+	# In[51]:
 
-# In[51]:
 
+	X=pd.get_dummies(X)
 
-X=pd.get_dummies(X)
 
+	# In[52]:
 
-# In[52]:
 
+	X.columns
 
-X.columns
 
+	# In[53]:
 
-# In[53]:
 
+	X.head()
 
-X.head()
 
+	# In[54]:
 
-# In[54]:
 
+	X['holiday'].value_counts().plot.bar()
 
-X['holiday'].value_counts().plot.bar()
 
+	# In[55]:
 
-# In[55]:
 
+	X['workingday'].value_counts().plot.bar()
 
-X['workingday'].value_counts().plot.bar()
 
+	# In[56]:
 
-# In[56]:
 
+	X.columns
 
-X.columns
 
+	# In[57]:
 
-# In[57]:
 
+	X.shape
 
-X.shape
 
+	# In[58]:
 
-# In[58]:
 
+	import seaborn as sns
 
-import seaborn as sns
 
+	# In[59]:
 
-# In[59]:
 
+	plt.figure(1)
+	plt.subplot(121)
+	sns.distplot(X['temp']); 
+	plt.subplot(122)
+	X['temp'].plot.box(figsize=(16,5)) 
+	plt.show()
 
-plt.figure(1)
-plt.subplot(121)
-sns.distplot(X['temp']); 
-plt.subplot(122)
-X['temp'].plot.box(figsize=(16,5)) 
-plt.show()
 
+	# In[60]:
 
-# In[60]:
 
+	plt.figure(1)
+	plt.subplot(121)
+	sns.distplot(X['atemp']); 
+	plt.subplot(122)
+	X['atemp'].plot.box(figsize=(16,5)) 
+	plt.show()
 
-plt.figure(1)
-plt.subplot(121)
-sns.distplot(X['atemp']); 
-plt.subplot(122)
-X['atemp'].plot.box(figsize=(16,5)) 
-plt.show()
 
+	# In[61]:
 
-# In[61]:
 
+	plt.figure(1)
+	plt.subplot(121)
+	sns.distplot(X['humidity']); 
+	plt.subplot(122)
+	X['humidity'].plot.box(figsize=(16,5)) 
+	plt.show()
 
-plt.figure(1)
-plt.subplot(121)
-sns.distplot(X['humidity']); 
-plt.subplot(122)
-X['humidity'].plot.box(figsize=(16,5)) 
-plt.show()
 
+	# In[62]:
 
-# In[62]:
 
+	plt.figure(1)
+	plt.subplot(121)
+	sns.distplot(X['windspeed']); 
+	plt.subplot(122)
+	X['windspeed'].plot.box(figsize=(16,5)) 
+	plt.show()
 
-plt.figure(1)
-plt.subplot(121)
-sns.distplot(X['windspeed']); 
-plt.subplot(122)
-X['windspeed'].plot.box(figsize=(16,5)) 
-plt.show()
 
+	# In[63]:
 
-# In[63]:
 
+	X.isnull().sum()
 
-X.isnull().sum()
 
+	# In[64]:
 
-# In[64]:
 
+	matrix = X.corr()
+	f, ax = plt.subplots(figsize=(16, 6))
+	sns.heatmap(matrix, vmax=.8, square=True, cmap="BuPu");
 
-matrix = X.corr()
-f, ax = plt.subplots(figsize=(16, 6))
-sns.heatmap(matrix, vmax=.8, square=True, cmap="BuPu");
 
+	# In[65]:
 
-# In[65]:
 
+	corrMat = X.corr()
+	mask = np.array(corrMat)
+	mask[np.tril_indices_from(mask)] = False
+	fig, ax= plt.subplots(figsize=(30, 10))
+	sns.heatmap(corrMat, mask=mask,vmax=1., square=True,annot=True)
 
-corrMat = X.corr()
-mask = np.array(corrMat)
-mask[np.tril_indices_from(mask)] = False
-fig, ax= plt.subplots(figsize=(30, 10))
-sns.heatmap(corrMat, mask=mask,vmax=1., square=True,annot=True)
 
+	# In[66]:
 
-# In[66]:
 
+	X.corr()
 
-X.corr()
 
+	# In[67]:
 
-# In[67]:
 
+	X['windspeed_log'] = np.log(X['windspeed'])
 
-X['windspeed_log'] = np.log(X['windspeed'])
 
+	# In[68]:
 
-# In[68]:
 
+	X['windspeed_log']
 
-X['windspeed_log']
 
-
-# In[ ]:
 
 
 
