@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import pickle
 from sklearn.externals import joblib
+season=2
+weather=3
+
 
 def createDF():
     return (pd.read_csv('data_mean_std.csv', header=0))
@@ -19,62 +22,23 @@ def transform_humidity(ini, humidity):
 def transform_windspeed(ini, windspeed):
     return ((windspeed-ini['mean_windspeed'][0])/ini['sd_windspeed'][0])
 
-def season_1():
-    season_1=1
-    return season_1
-def season_2():
-    season_2=1
-    return season_1
-def season_3():
-    season_3=1
-    return season_1
-def season_4():
-    season_4=1
-    return season_1
-def default():
-    return "Incorrect season"
+def Season_1(s):
+    if s==1:
+        return (1)
+    else:
+        return (0)
 
-def switch_season(season):
-    switcher={
-
-            1:'season_1',
-            2:'season_2',
-            3:'season_3',
-            4:'season_4',
-
-         }
-    return switcher.get(season,default())
-
-
-def weather_1():
-    weather_1=1
-    return weather_1
-def weather_2():
-    weather_2=1
-    return weather_1
-def weather_3():
-    weather_3=1
-    return weather_1
-def weather_4():
-    weather_4=1
-    return weather_1
-def default():
-    return "Incorrect weather"
-
-def switch_weather(weather):
-    switcher={
-
-            1:'weather_1',
-            2:'weather_2',
-            3:'weather_3',
-            4:'weather_4',
-
-         }
-    return switcher.get(weather,default())
-
-
-
-
+def Season_2(s)
+    if s==2:
+        return (1)
+    else:
+        return (0)
+    
+def Weather_1(w)
+    if w==1:
+        return (1)
+    else:
+        return (0)
 
 app = Flask(__name__)
 #Machine Learning code goes here
@@ -99,6 +63,9 @@ def predict():
         holiday=request.form['holiday']
         workingDay=request.form['workingDay']
         
+        #In the code below, look for 1 and 0 related with seeason.
+        #Replace them with corresponding calls to season function, like Season_1(season), Season_2(season) etc
+        #Repeat for every on hot encoded variable
         predict_rest=[0,1, transform_temp(ini,22),transform_atemp(ini,22),transform_humidity(ini,71),transform_windspeed(ini,24),2012,6,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0 ]
         predict_rest=np.array(predict_rest)
         predict_rest=predict_rest.reshape((1, -1))
