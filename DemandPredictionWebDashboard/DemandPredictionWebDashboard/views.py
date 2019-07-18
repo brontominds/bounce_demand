@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template
+from flask import render_template, request
 from DemandPredictionWebDashboard import app
 import requests
 import json
@@ -19,25 +19,55 @@ def home():
         year=datetime.now().year,
     )
 
-@app.route('/predict')
+@app.route('/predict', methods = ['POST'])
 def predict():
     """Renders the contact page."""
-    params={
-        'date':'24-july-2019',
-        'location':'Bellandur',
-        'season':'3',
-        }
-   # url='http://localhost:5050/predict'
-    #r = requests.post(url, params=params)
+    holiday=request.form['holiday']
+    workingday=request.form['workingDay']
+    temp=request.form['temp']
+    atemp=request.form['atemp']
+    humidity=request.form['humidity']
+    windspeed=request.form['windspeed']
+    season=request.form['season']
+    weather=request.form['weather']
+    year=request.form['year']
+    day=request.form['day']
+    hour=request.form['hour']
+    dayofweek=request.form['dayofweek']
+    month=request.form['month']
 
+    params={
+        'holiday':holiday,
+        'workingDay':workingday,
+        'temp':temp,
+        'atemp':atemp,
+        'humidity':humidity,
+        'windspeed':windspeed,
+        'season':season,
+        'weather':weather,
+        'year':year,
+        'day':day,
+        'hour':hour,
+        'dayofweek':dayofweek,
+        'month':month
+        }
+
+    url='http://127.0.0.1:5000/predict'
+
+
+    r = requests.post(url, data=params)
+    data = r.json()
+    a = data['prediction']
 
     return render_template(
         'contact.html',
         title='Contact',
         year=datetime.now().year,
         message='Predicted Demand',
-        demand='136'
+        demand=a
     )
+
+
 
 @app.route('/about')
 def about():
