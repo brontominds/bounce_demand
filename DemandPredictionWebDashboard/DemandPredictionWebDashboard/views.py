@@ -35,6 +35,8 @@ def predict():
     hour=request.form['hour']
     dayofweek=request.form['dayofweek']
     month=request.form['month']
+    date=request.form['date']
+    location=request.form['location']
 
     params={
         'holiday':holiday,
@@ -50,6 +52,7 @@ def predict():
         'hour':hour,
         'dayofweek':dayofweek,
         'month':month
+        
         }
 
     url='http://127.0.0.1:5000/predict'
