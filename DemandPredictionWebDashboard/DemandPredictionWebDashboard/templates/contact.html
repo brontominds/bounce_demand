@@ -6,14 +6,62 @@
     <h3>Bounce Demand Prediction - For illustration purpose only</h3>
     <h4>Powered by Brontominds</h4>
     <hr />
-    <form action="/contact">
+    <form action="/predict" method="post">
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Holiday</span>
+            <input id="holiday" type="text" class="form-control" name="holiday" placeholder="holiday" value="0">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Working Day</span>
+            <input id="workingDay" type="text" class="form-control" name="workingDay" placeholder="workingDay" value="1">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Temperature (in &degC)</span>
+            <input id="temp" type="text" class="form-control" name="temp" placeholder="temp" value="22">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Feeling Temperature (in &degC)</span>
+            <input id="atemp" type="text" class="form-control" name="atemp" placeholder="atemp" value="23">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Relative Humidity</span>
+            <input id="humidity" type="text" class="form-control" name="humidity" placeholder="humidity" value="65">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Windspeed (kms per hour)</span>
+            <input id="windspeed" type="text" class="form-control" name="windspeed" placeholder="windspeed" value="71">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Season</span>
+            <input id="season" type="text" class="form-control" name="season" placeholder="season" value="3">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Weather</span>
+            <input id="weather" type="text" class="form-control" name="weather" placeholder="weather" value="3">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Year</span>
+            <input id="year" type="text" class="form-control" name="year" placeholder="year" value="2019">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Day</span>
+            <input id="day" type="text" class="form-control" name="day" placeholder="day" value="24">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Day of the week</span>
+            <input id="dayofweek" type="text" class="form-control" name="dayofweek" placeholder="dayofweek" value="2">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Month</span>
+            <input id="month" type="text" class="form-control" name="month" placeholder="month" value="7">
+        </div>
         <div class="input-group">
             <span class="input-group-addon" style="width:200px; text-align:left">Date</span>
             <input id="date" type="text" class="form-control" name="date" placeholder="Date" value="24-July-2019">
         </div>
         <div class="input-group">
-            <span class="input-group-addon" style="width:200px; text-align:left">Time</span>
-            <input id="time" type="text" class="form-control" name="time" placeholder="Time" value="10:00AM - 11:00AM">
+            <span class="input-group-addon" style="width:200px; text-align:left">Hour</span>
+            <input id="hour" type="text" class="form-control" name="hour" placeholder="hour" value="10">
         </div>
         <div class="input-group">
             <span class="input-group-addon" style="width:200px; text-align:left">Location</span>
@@ -21,8 +69,12 @@
         </div>
         <br />
         <button type="submit" class="btn btn-success">Predict Demand</button>
-</form>
-    <h4>{{ demand }}</h4>
+    </form>
+    <div class="input-group">
+        <span class="input-group-addon" style="width:200px; text-align:left">Predicted Demand</span>
+        <input id="dmeand" type="text" class="form-control" name="dmeand" placeholder="dmeand" value="{{ demand }}">
+    </div>
+   
 </div>
 
     {% endblock %}
