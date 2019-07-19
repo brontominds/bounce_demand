@@ -7,6 +7,7 @@ from flask import render_template, request
 from DemandPredictionWebDashboard import app
 import requests
 import json
+import pandas as pd
 
 
 @app.route('/')
@@ -22,22 +23,22 @@ def home():
 @app.route('/predict', methods = ['POST'])
 def predict():
     """Renders the contact page."""
-    holiday=request.form['holiday']
-    workingday=request.form['workingDay']
-    temp=request.form['temp']
-    atemp=request.form['atemp']
-    humidity=request.form['humidity']
-    windspeed=request.form['windspeed']
-    season=request.form['season']
-    weather=request.form['weather']
-    year=request.form['year']
-    day=request.form['day']
-    hour=request.form['hour']
-    dayofweek=request.form['dayofweek']
-    month=request.form['month']
+    df=pd.read_csv("output.csv")
+    holiday=df['holiday']
+    workingday=df['workingday']
+    temp=df['temp']
+    atemp=df['app_temp']
+    humidity=df['rh']
+    windspeed=df['wind_spd']
+    season=df['season_code']
+    weather=df['weather_code']
+    year=df['year']
+    day=df['day']
+    hour=df['hour']
+    dayofweek=df['dayofweek']
+    month=df['month']
     date=request.form['date']
     location=request.form['location']
-
     params={
         'holiday':holiday,
         'workingDay':workingday,
