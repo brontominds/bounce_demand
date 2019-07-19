@@ -1,15 +1,9 @@
-from flask import Flask, render_template,url_for,request,jsonify
+from flask import Flask, render_template,url_for,request,jsonify, Response
 import pandas as pd
 import numpy as np
 import pickle
 from sklearn.externals import joblib
 
-
-
-
-
-    
-    
 
 app = Flask(__name__)
 #Machine Learning code goes here
@@ -58,7 +52,7 @@ def predict():
            'dayofweek_6', 'month_1', 'month_2', 'month_3', 'month_4', 'month_5',
            'month_6', 'month_7', 'month_8', 'month_9', 'month_10', 'month_11',
            'month_12'])
-    meanFileName = r'C:\Users\Shrweta\Documents\GitHub\bounce_demand\DemandPredictionApi\data_mean_std.csv'
+    meanFileName = r'data_mean_std.csv'
     dfMeans=pd.read_csv(meanFileName, header=0)
     mean_temp=dfMeans['mean_temp'][0]
     mean_atemp=dfMeans['mean_atemp'][0]
@@ -87,8 +81,8 @@ def predict():
     predict_rest=predict_rest.reshape((1, -1))
     prediction=NN_model.predict(predict_rest)
     a=str(prediction[0][0])
+    #print(jsonify(prediction=a))
     return jsonify(prediction=a)
-
         
 
 
