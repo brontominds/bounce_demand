@@ -8,6 +8,12 @@ from DemandPredictionWebDashboard import app
 import requests
 import json
 import pandas as pd
+import os
+
+
+APP_ROOT=os.path.dirname(os.path.abspath(__file__))
+FILE_PATH=os.path.join(APP_ROOT,'output.csv')
+
 
 
 @app.route('/')
@@ -22,37 +28,149 @@ def home():
 
 @app.route('/predict', methods = ['POST'])
 def predict():
+    df=pd.read_csv(FILE_PATH)
     """Renders the contact page."""
-    df=pd.read_csv("output.csv")
-    holiday=df['holiday']
-    workingday=df['workingday']
-    temp=df['temp']
-    atemp=df['app_temp']
-    humidity=df['rh']
-    windspeed=df['wind_spd']
-    season=df['season_code']
-    weather=df['weather_code']
-    year=df['year']
-    day=df['day']
-    hour=df['hour']
-    dayofweek=df['dayofweek']
-    month=df['month']
+    hour=request.form['hour']
     date=request.form['date']
     location=request.form['location']
+    
+def filtering_the_data(df,location,date,hour):
+
+if df['place'].str.contains(location).any():
+    df=df[df['datetime'].dt.date.astype(str) == date]
+    df=df[df['hour']==(hour)]
+    return df
+else:
+    print('Location not present')
+    
+def length_of_dataframe(df):
+    if len(df)==0:
+    return render_template(
+        'contact.html')
+elif len(df)>1:
+    return render_template(
+        'contact.html')
+else:
+    return df
+
+def holiday(df):
+    flag=True
+    if df['holiday'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        holiday=df['holiday'].astype(int)
+        return holiday
+    
+def workingday(df):
+    flag=True
+    if df['workingday'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        workingday=df['workingday'].astype(int)
+        return workingday
+    
+def temp(df):
+    flag=True
+    if df['temp'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        temp=df['temp'].astype(float)
+        return temp
+    
+def atemp(df):
+    flag=True
+    if df['app_temp'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        atemp=df['app_temp'].astype(float)
+        return atemp
+    
+def humidity(df):
+    flag=True
+    if df['rh'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        humidity=df['rh'].astype(float)
+        return humidity
+    
+def weather(df):
+    flag=True
+    if df['weather_code'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        weather=df['weather_code'].astype(int)
+        return weather
+    
+def season(df):
+    flag=True
+    if df['season_code'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        season=df['season_code'].astype(int)
+        return season
+    
+def windspeed(df):
+    flag=True
+    if df['windspeed'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        windspeed=df['windspeed'].astype(int)
+        return windspeed
+    
+def year(df):
+    flag=True
+    if df['year'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        year=df['year'].astype(int)
+        return year
+    
+def day(df):
+    flag=True
+    if df['day'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        year=df['day'].astype(int)
+        return year
+
+def hour(df):
+    flag=True
+    if df['hour'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        hour=df['hour'].astype(int)
+        return hour
+        
+        
+def month(df):
+    flag=True
+    if df['month'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        month=df['month'].astype(int)
+        return month
+  
+  df= filtering_the_data(df,location,date,hour)
+     df=length_of_dataframe(df)
+  
+    
+    
+    
+    
     params={
-        'holiday':holiday,
-        'workingDay':workingday,
-        'temp':temp,
-        'atemp':atemp,
-        'humidity':humidity,
-        'windspeed':windspeed,
-        'season':season,
-        'weather':weather,
-        'year':year,
-        'day':day,
-        'hour':hour,
-        'dayofweek':dayofweek,
-        'month':month
+        'holiday':holiday(df),
+        'workingDay':workingday(df),
+        'temp':temp(df),
+        'atemp':atemp(df),
+        'humidity':humidity(df),
+        'windspeed':windspeed(df),
+        'season':season(df)
+        'weather':weather(df),
+        'year':year(df),
+        'day':day(df),
+        'hour':hour(df),
+        'dayofweek':dayofweek(df),
+        'month':month(df)
         
         }
 
