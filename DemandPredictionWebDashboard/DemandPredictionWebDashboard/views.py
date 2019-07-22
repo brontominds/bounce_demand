@@ -5,51 +5,40 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request
 from DemandPredictionWebDashboard import app
-import importlib 
-module_name = "WeatherFrecast"
-from WeatherFrecast import weatherForecast
-import requests
-import json
-import pandas as pd
+import sys
 import os
 
 
+import requests
+import json
+import pandas as pd
 
-
-
-@app.route('/')
-@app.route('/home')
-def home():
-    """Renders the home page."""
-    return render_template(
-        'index.html',
-        title='Home Page',
-        year=datetime.now().year,
-    )
-
-@app.route('/predict', methods = ['POST'])
-def predict():
-    #df=pd.read_csv(FILE_PATH)
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'wf'))
+#print(sys.path[-1])
+from wff import weatherForecast
 
     
-    df=weatherForecast()
-    """Renders the contact page."""
-    hour=request.form['hour']
-    date=request.form['date']
-    location=request.form['location']
-
-    data=df.filterP(location,date,hour)
+def holiday(df):
+    flag=True
+    if df['holiday'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        holiday=df['holiday']
+        return holiday
+def season(df):
+    flag=True
+    if df['season'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        season=df['season']
+        return season
     
-
-    holiday=df.checkHolc(date)
-
-    season=getSeasonc(date)    
 def workingday(df):
     flag=True
     if df['workingday'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        workingday=df['workingday'].astype(int)
+        workingday=df['workingday']
         return workingday
     
 def temp(df):
@@ -81,16 +70,16 @@ def weather(df):
     if df['weather_code'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        weather=df['weather_code'].astype(int)
+        weather=df['weather_code']
         return weather
     
 
 def windspeed(df):
     flag=True
-    if df['windspeed'].isnull().values.any()==flag:
+    if df['wind_spd'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        windspeed=df['windspeed'].astype(int)
+        windspeed=df['wind_spd']
         return windspeed
     
 def year(df):
@@ -98,7 +87,7 @@ def year(df):
     if df['year'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        year=df['year'].astype(int)
+        year=df['year']
         return year
     
 def day(df):
@@ -106,16 +95,8 @@ def day(df):
     if df['day'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        year=df['day'].astype(int)
+        year=df['day']
         return year
-
-def hour(df):
-    flag=True
-    if df['hour'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        hour=df['hour'].astype(int)
-        return hour
         
         
 def month(df):
@@ -123,36 +104,71 @@ def month(df):
     if df['month'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        month=df['month'].astype(int)
+        month=df['month']
         return month
-  
-  
+
     
+def dayofweek(df):
+    flag=True
+    if df['dayofweek'].isnull().values.any()==flag:
+         return render_template('contact.html')
+    else:
+        dayofweek=df['dayofweek']
+        return dayofweek
+
+@app.route('/')
+@app.route('/home')
+def home():
+    """Renders the home page."""
+    return render_template(
+        'index.html',
+        title='Home Page',
+        year=datetime.now().year,
+    )
+
+@app.route('/predict', methods = ['POST'])
+def predict():
+    #df=pd.read_csv(FILE_PATH)
+
     
+    df=weatherForecast()
+    """Renders the contact page."""
+    hour=int(request.form['hour'])
+    date=request.form['date']
+    location=request.form['location']
     
+    df.inputData('latlon',[12.9304,77.6784] ,location)
+    data=df.filterP(location,date,hour)
+    
+
     
     params={
-        'holiday':holiday,
+        'holiday':holiday(data),
         'workingDay':workingday(data),
         'temp':temp(data),
         'atemp':atemp(data),
         'humidity':humidity(data),
         'windspeed':windspeed(data),
-        'season':season,
+        'season':season(data),
         'weather':weather(data),
         'year':year(data),
         'day':day(data),
-        'hour':hour(data),
+        'hour':hour,
         'dayofweek':dayofweek(data),
         'month':month(data)
-        
         }
 
     url='http://127.0.0.1:5000/predict'
 
 
     r = requests.post(url, data=params)
-    data = r.json()
+    print(r.text)
+    
+    data=r.json()
+    
+        
+
+    
     a = data['prediction']
 
     return render_template(

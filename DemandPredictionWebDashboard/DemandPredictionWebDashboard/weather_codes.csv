@@ -1,0 +1,39 @@
+Code ,Description ,Weather
+200,Thunderstorm with light rain ,3
+201,Thunderstorm with rain ,4
+202,Thunderstorm with heavy rain ,4
+230,Thunderstorm with light drizzle ,3
+231,Thunderstorm with drizzle ,4
+232,Thunderstorm with heavy drizzle ,4
+233,Thunderstorm with Hail ,4
+300,Light Drizzle ,2
+301,Drizzle ,2
+302,Heavy Drizzle ,3
+500,Light Rain ,2
+501,Moderate Rain ,3
+502,Heavy Rain ,4
+511,Freezing rain ,4
+520,Light shower rain ,3
+521,Shower rain ,3
+522,Heavy shower rain ,4
+600,Light snow ,3
+601,Snow ,4
+602,Heavy Snow ,4
+610,Mix snow/rain ,4
+611,Sleet ,4
+612,Heavy sleet ,4
+621,Snow shower ,4
+622,Heavy snow shower ,4
+623,Flurries ,4
+700,Mist ,2
+711,Smoke ,2
+721,Haze ,3
+731,Sand/dust ,2
+741,Fog ,2
+751,Freezing Fog ,2
+800,Clear sky ,1
+801,Few clouds ,1
+802,Scattered clouds ,1
+803,Broken clouds ,1
+804,Overcast clouds ,1
+900,Unknown Precipitation ,

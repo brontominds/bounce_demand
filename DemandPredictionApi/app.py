@@ -24,6 +24,8 @@ def home():
 @app.route('/predict' , methods = ['POST'])
 def predict():
     
+    print("Entered here")
+    
     NN_model=joblib.load('BounceDemandPredictionv001.pkl')
     if request.method == 'POST':
         holiday=request.form['holiday']
@@ -81,7 +83,7 @@ def predict():
     predict_rest=predict_rest.reshape((1, -1))
     prediction=NN_model.predict(predict_rest)
     a=str(prediction[0][0])
-    #print(jsonify(prediction=a))
+    print(jsonify(prediction=a))
     return jsonify(prediction=a)
         
 
