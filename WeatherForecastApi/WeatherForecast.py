@@ -3,31 +3,20 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 
-
 class weatherForecast:
     def __init__(self, hours = 48):
+        self.ready = False
         self.PARAMS = {
-        #DOCUMENTATION USED: https://www.weatherbit.io/api/weather-forecast-120-hour  
-
-        #Get forecast by lat/lon 	lat,lon
-            'lat':12.92735,
-            'lon':77.67185,
-
-        #Get forecast by city name  	city, state(optional), country (optional)
-
-        #Get forecast by postal code 	postal_code, country (optional)
-        #     'postal_code': 560102,
-        #     'country': 'IN',
-
-        #Get forecast by Station 	station
-
-        #Get forecast by city id 	city_id
-
             'lang':'en',
             'hours':hours 
         }
+        
+        self.temp = pd.DataFrame()
         self.weather_forecast = pd.DataFrame()
+        
         self.data = []
+        
+        self.input_data = pd.DataFrame(columns = ['Type', 'Location', 'Status', 'City', 'Name'])
         
         seasons = pd.read_csv('seasons.csv')
         seasons['StartDate']= pd.to_datetime(seasons['StartDate']).dt.date
@@ -40,7 +29,69 @@ class weatherForecast:
         
         holidays = pd.read_csv('Holidays 2019.csv')
         self.holidays = pd.to_datetime(holidays['Date']).dt.date.values
+        
+    def filterP(self, place, date, hr):
+        if not place in list(self.input_data['Name']):
+            print("Not in input data yet, please add first")
+            print(list(self.input_data['Place']))
+            return
+        
+        date = dt.datetime.strptime(date, '%Y-%m-%d').date()
+        dattim = dt.datetime.combine(date, dt.time(hr, 30))
+        
+        ans = self.weather_forecast[(self.weather_forecast['place'] == place) & (self.weather_forecast['timestamp_local'] == dattim)]
+        
+        if(ans.shape[0] == 0):
+            print("No results found")
+            return -1
+        if ans.shape[0] > 1:
+            print("Too many results(?)")
+            print(ans)
+            return -2
+        
+        return ans
+    
+        
+        
+    def inputData(self, typeloc, loc, nameofPlace='NA',hours = 48):
+        if not typeloc in ['latlon']:
+            return 
+        
+        if(typeloc == 'latlon'):
+            self.PARAMS = {
+                'lat':loc[0],
+                'lon':loc[1],
+                
+                'lang':'en',
+                'hours':hours 
+            }
+            
+            self.ready = True
+            x = self.callAPI()
+            self.ready = False
 
+            if not x.status_code == 200:
+                print("Invalid response",x.status_code)
+                return
+            self.data = x.json()
+
+            from pandas.io.json import json_normalize
+            self.temp =  json_normalize(self.data['data'])
+            
+            loc = [typeloc,loc,1, self.data['city_name'], nameofPlace]
+            self.input_data = self.input_data.append(pd.DataFrame([loc], columns = ['Type', 'Location', 'Status', 'City', 'Name']))
+            self.modifyDf(nameofPlace)
+            self.addDf()
+            
+            
+    def addDf(self):
+        if self.weather_forecast.empty:
+            self.weather_forecast = self.temp.copy()
+        else:
+            self.weather_forecast = self.weather_forecast.append(self.temp, ignore_index = True)
+            
+        self.temp = pd.DataFrame()
+        
         
     def getSeasonc(self, dateGive):
         Y = 2000
@@ -66,6 +117,10 @@ class weatherForecast:
 
     
     def callAPI(self):
+        if not self.ready:
+            print("Not Reayd")
+            return
+        
         r = requests.get("https://weatherbit-v1-mashape.p.rapidapi.com/forecast/hourly",
                          headers={
                              "X-RapidAPI-Host": "weatherbit-v1-mashape.p.rapidapi.com",
@@ -73,36 +128,32 @@ class weatherForecast:
                          },
                          params = self.PARAMS
         )
-
-        self.data = r.json()
-
-        from pandas.io.json import json_normalize
-        self.weather_forecast =  json_normalize(self.data['data'])
+        return r
         
 
-    def modifyDf(self):
-        self.weather_forecast['datetime'] = pd.to_datetime(self.weather_forecast['datetime'], format = "%Y-%m-%d:%H")
-        self.weather_forecast['timestamp_local'] = pd.to_datetime(self.weather_forecast['timestamp_local'])
-        self.weather_forecast['city'] = self.data['city_name']
-        self.weather_forecast['lon'] = self.data['lon']
-        self.weather_forecast['lat'] = self.data['lat']
-        self.weather_forecast['place'] = 'Bellandur'
+    def modifyDf(self, place):
+        self.temp['datetime'] = pd.to_datetime(self.temp['datetime'], format = "%Y-%m-%d:%H")
+        self.temp['timestamp_local'] = pd.to_datetime(self.temp['timestamp_local'])
+        self.temp['city'] = self.data['city_name']
+        self.temp['lon'] = self.data['lon']
+        self.temp['lat'] = self.data['lat']
+        self.temp['place'] = place
 
-        self.weather_forecast['weather_code'] = self.weather_forecast['weather.code'].apply(lambda x : int(self.weather_codes[x]))
+        self.temp['weather_code'] = self.temp['weather.code'].apply(lambda x : int(self.weather_codes[x]))
 
     
-        self.weather_forecast['season'], self.weather_forecast['season_code'] = zip(*self.weather_forecast['timestamp_local'].apply(self.getSeasonc))
-        self.weather_forecast['dayofweek'] = self.weather_forecast['timestamp_local'].dt.dayofweek
-        self.weather_forecast['workingday'] = self.weather_forecast['dayofweek']//5
+        self.temp['season'], self.temp['season_code'] = zip(*self.temp['timestamp_local'].apply(self.getSeasonc))
+        self.temp['dayofweek'] = self.temp['timestamp_local'].dt.dayofweek
+        self.temp['workingday'] = self.temp['dayofweek']//5
 
-        self.weather_forecast['holiday'] = self.weather_forecast['timestamp_local'].dt.date.apply(self.checkHolc)
+        self.temp['holiday'] = self.temp['timestamp_local'].dt.date.apply(self.checkHolc)
         
-        self.weather_forecast['year'] = self.weather_forecast['timestamp_local'].dt.year
-        self.weather_forecast['month'] = self.weather_forecast['timestamp_local'].dt.month
-        self.weather_forecast['day'] = self.weather_forecast['timestamp_local'].dt.hour
-        self.weather_forecast['hour'] = self.weather_forecast['timestamp_local'].dt.hour
+        self.temp['year'] = self.temp['timestamp_local'].dt.year
+        self.temp['month'] = self.temp['timestamp_local'].dt.month
+        self.temp['day'] = self.temp['timestamp_local'].dt.hour
+        self.temp['hour'] = self.temp['timestamp_local'].dt.hour
 
 
     def displayReq(self):
-        print(self.weather_forecast[['place','lat', 'lon', 'city','app_temp', 'timestamp_local', 'temp', 'rh', 'wind_spd', 'weather_code','season', 'season_code','dayofweek', 'workingday','holiday', 'year', 'month', 'day', 'hour']])
+        print(self.temp[['place','lat', 'lon', 'city','app_temp', 'timestamp_local', 'temp', 'rh', 'wind_spd', 'weather_code','season', 'season_code','dayofweek', 'workingday','holiday', 'year', 'month', 'day', 'hour']])
 
