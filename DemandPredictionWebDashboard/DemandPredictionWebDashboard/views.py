@@ -5,14 +5,15 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, request
 from DemandPredictionWebDashboard import app
+import importlib 
+module_name = "WeatherFrecast"
+from WeatherFrecast import weatherForecast
 import requests
 import json
 import pandas as pd
 import os
 
 
-APP_ROOT=os.path.dirname(os.path.abspath(__file__))
-FILE_PATH=os.path.join(APP_ROOT,'output.csv')
 
 
 
@@ -28,39 +29,21 @@ def home():
 
 @app.route('/predict', methods = ['POST'])
 def predict():
-    df=pd.read_csv(FILE_PATH)
+    #df=pd.read_csv(FILE_PATH)
+
+    
+    df=weatherForecast()
     """Renders the contact page."""
     hour=request.form['hour']
     date=request.form['date']
     location=request.form['location']
-    
-def filtering_the_data(df,location,date,hour):
 
-if df['place'].str.contains(location).any():
-    df=df[df['datetime'].dt.date.astype(str) == date]
-    df=df[df['hour']==(hour)]
-    return df
-else:
-    print('Location not present')
+    data=df.filterP(location,date,hour)
     
-def length_of_dataframe(df):
-    if len(df)==0:
-    return render_template(
-        'contact.html')
-elif len(df)>1:
-    return render_template(
-        'contact.html')
-else:
-    return df
 
-def holiday(df):
-    flag=True
-    if df['holiday'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        holiday=df['holiday'].astype(int)
-        return holiday
-    
+    holiday=df.checkHolc(date)
+
+    season=getSeasonc(date)    
 def workingday(df):
     flag=True
     if df['workingday'].isnull().values.any()==flag:
@@ -101,14 +84,7 @@ def weather(df):
         weather=df['weather_code'].astype(int)
         return weather
     
-def season(df):
-    flag=True
-    if df['season_code'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        season=df['season_code'].astype(int)
-        return season
-    
+
 def windspeed(df):
     flag=True
     if df['windspeed'].isnull().values.any()==flag:
@@ -150,27 +126,25 @@ def month(df):
         month=df['month'].astype(int)
         return month
   
-  df= filtering_the_data(df,location,date,hour)
-     df=length_of_dataframe(df)
   
     
     
     
     
     params={
-        'holiday':holiday(df),
-        'workingDay':workingday(df),
-        'temp':temp(df),
-        'atemp':atemp(df),
-        'humidity':humidity(df),
-        'windspeed':windspeed(df),
-        'season':season(df)
-        'weather':weather(df),
-        'year':year(df),
-        'day':day(df),
-        'hour':hour(df),
-        'dayofweek':dayofweek(df),
-        'month':month(df)
+        'holiday':holiday,
+        'workingDay':workingday(data),
+        'temp':temp(data),
+        'atemp':atemp(data),
+        'humidity':humidity(data),
+        'windspeed':windspeed(data),
+        'season':season,
+        'weather':weather(data),
+        'year':year(data),
+        'day':day(data),
+        'hour':hour(data),
+        'dayofweek':dayofweek(data),
+        'month':month(data)
         
         }
 
