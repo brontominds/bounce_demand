@@ -128,7 +128,7 @@ def home():
 
 @app.route('/predict', methods = ['POST'])
 def predict():
-    #df=pd.read_csv(FILE_PATH)
+    
 
     
     df=weatherForecast()
