@@ -7,7 +7,7 @@ from flask import render_template, request
 from DemandPredictionWebDashboard import app
 import sys
 import os
-import string
+
 
 
 import requests
@@ -19,114 +19,27 @@ wff=sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'w
 from wff import weatherForecast
 
     
-def holiday(df):
+def Checking_Null_values(df,column_name):
     flag=True
-    if df['holiday'].isnull().values.any()==flag:
+    if df['column_name'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        holiday=df['holiday']
-        return holiday
+        column_name=df['column_name']
+        return column_name
 
-
-#TODO: Currently monsoon=4 is built. take care of other seasons. Ideally, Mayank should return an integer.
-def ConvertSeason(stringSeason):
-    stringSeason = (str(stringSeason).strip()).upper()
-
-    if (stringSeason.find("MONSOON") !=-1):
-        return 4;
-    else:
-        return 3;
-
-def season(df):
-    flag=True
-    if df['season'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        season=ConvertSeason(df['season'])
-        return season
     
-def workingday(df):
-    flag=True
-    if df['workingday'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        workingday=df['workingday']
-        return workingday
-    
-def temp(df):
-    flag=True
-    if df['temp'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        temp=df['temp'].astype(float)
-        return temp
-    
-def atemp(df):
-    flag=True
-    if df['app_temp'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        atemp=df['app_temp'].astype(float)
-        return atemp
-    
-def humidity(df):
-    flag=True
-    if df['rh'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        humidity=df['rh'].astype(float)
-        return humidity
-    
-def weather(df):
-    flag=True
-    if df['weather_code'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        weather=df['weather_code']
-        return weather
-    
-
-def windspeed(df):
-    flag=True
-    if df['wind_spd'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        windspeed=df['wind_spd']
-        return windspeed
-    
-def year(df):
-    flag=True
-    if df['year'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        year=df['year']
-        return year
-    
-def day(df):
-    flag=True
-    if df['day'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        year=df['day']
-        return year
+def validate(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
         
+    except ValueError:
+        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
         
-def month(df):
-    flag=True
-    if df['month'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        month=df['month']
-        return month
-
-    
-def dayofweek(df):
-    flag=True
-    if df['dayofweek'].isnull().values.any()==flag:
-         return render_template('contact.html')
-    else:
-        dayofweek=df['dayofweek']
-        return dayofweek
+def validate_hour(hour):
+    try:
+        if (int(hour)<0)&(int(hour)>23):
+    except ValueError:
+        raise ValueError("Invalid value")
 
 @app.route('/')
 @app.route('/home')
@@ -143,31 +56,34 @@ def predict():
     
 
     
+    
     df=weatherForecast()
     """Renders the contact page."""
     hour=int(request.form['hour'])
-    date=request.form['date']
+    date=validate(request.form['date'])
     location=request.form['location']
+ 
     
     df.inputData('latlon',[12.9304,77.6784] ,location)
     data=df.filterP(location,date,hour)
    
+   
 
     
     params={
-        'holiday':holiday(data),
-        'workingDay':workingday(data),
-        'temp':temp(data),
-        'atemp':atemp(data),
-        'humidity':humidity(data),
-        'windspeed':windspeed(data),
-        'season':season(data),
-        'weather':weather(data),
-        'year':year(data),
-        'day':day(data),
+        'holiday':Checking_Null_values(data,holiday),
+        'workingDay':Checking_Null_values(data,workingday),
+        'temp':Checking_Null_values(data,temp),
+        'atemp':Checking_Null_values(data,app_temp),
+        'humidity':Checking_Null_values(data,rh),
+        'windspeed':Checking_Null_values(data,wind_spd),
+        'season':Checking_Null_values(data,season_code),
+        'weather':Checking_Null_values(data,weather_code),
+        'year':Checking_Null_values(data,year),
+        'day':Checking_Null_values(data,day),
         'hour':hour,
-        'dayofweek':dayofweek(data),
-        'month':month(data)
+        'dayofweek':Checking_Null_values(data,dayofweek),
+        'month':Checking_Null_values(data,month)
         }
 
     url='http://127.0.0.1:5000/predict'
