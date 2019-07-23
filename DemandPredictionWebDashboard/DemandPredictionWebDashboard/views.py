@@ -7,13 +7,14 @@ from flask import render_template, request
 from DemandPredictionWebDashboard import app
 import sys
 import os
+import string
 
 
 import requests
 import json
 import pandas as pd
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'wf'))
+wff=sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'wf'))
 #print(sys.path[-1])
 from wff import weatherForecast
 
@@ -25,12 +26,23 @@ def holiday(df):
     else:
         holiday=df['holiday']
         return holiday
+
+
+#TODO: Currently monsoon=4 is built. take care of other seasons. Ideally, Mayank should return an integer.
+def ConvertSeason(stringSeason):
+    stringSeason = (str(stringSeason).strip()).upper()
+
+    if (stringSeason.find("MONSOON") !=-1):
+        return 4;
+    else:
+        return 3;
+
 def season(df):
     flag=True
     if df['season'].isnull().values.any()==flag:
          return render_template('contact.html')
     else:
-        season=df['season']
+        season=ConvertSeason(df['season'])
         return season
     
 def workingday(df):
@@ -139,7 +151,7 @@ def predict():
     
     df.inputData('latlon',[12.9304,77.6784] ,location)
     data=df.filterP(location,date,hour)
-    
+   
 
     
     params={

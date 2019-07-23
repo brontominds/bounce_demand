@@ -5,6 +5,7 @@ class weatherForecast:
         import requests
         import numpy as np
         import datetime as dt
+        import os, sys
         
         self.ready = False
         self.PARAMS = {
@@ -19,16 +20,21 @@ class weatherForecast:
         
         self.input_data = pd.DataFrame(columns = ['Type', 'Location', 'Status', 'City', 'Name'])
         
-        seasons = pd.read_csv('seasons.csv')
+        #print (os.path.join(os.path.dirname(os.path.realpath(__file__)), 'seasons.csv'))
+        sFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'seasons.csv')
+
+        seasons = pd.read_csv(sFile)
         seasons['StartDate']= pd.to_datetime(seasons['StartDate']).dt.date
         seasons['EndDate']= pd.to_datetime(seasons['EndDate']).dt.date
         self.seasons = np.array(seasons.to_records(index = False))
 
-        weather_codes = pd.read_csv("weather_codes.csv")
+        wFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'weather_codes.csv')
+        weather_codes = pd.read_csv(wFile)
         weather_codes.drop(labels='Description ',axis = 1, inplace = True)
         self.weather_codes = dict(zip(weather_codes['Code '], weather_codes.Weather))
         
-        holidays = pd.read_csv('Holidays 2019.csv')
+        hFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Holidays_2019.csv')
+        holidays = pd.read_csv(hFile)
         self.holidays = pd.to_datetime(holidays['Date']).dt.date.values
         
     def filterP(self, place, date, hr):
