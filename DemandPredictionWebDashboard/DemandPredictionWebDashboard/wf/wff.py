@@ -1,3 +1,9 @@
+class DateOutsideWeatherPredictionError(Exception):
+    pass
+
+class InvalidLocation(Exception):
+    pass
+
 class weatherForecast:
     def __init__(self, hours = 48):
         
@@ -50,7 +56,7 @@ class weatherForecast:
         if(ans.shape[0] == 0):
             raise DateOutsideWeatherPredictionError("DateError: " + dt.datetime.strftime(date, '%Y-%m-%d') + ", outside range of weather prediction.")
         if ans.shape[0] > 1:
-            print("Too many results(?)")
+            raise ("Too many results(?)")
         
         return ans
     
@@ -74,8 +80,7 @@ class weatherForecast:
             self.ready = False
 
             if not x.status_code == 200:
-                print("Invalid response",x.status_code)
-                return
+                raise WebError("Invalid response code from API: ",x.status_code)
             self.data = x.json()
 
             from pandas.io.json import json_normalize
@@ -121,8 +126,7 @@ class weatherForecast:
     
     def callAPI(self):
         if not self.ready:
-            print("Not Reayd")
-            return
+            raise Error("No Input Data supplied")
         
         r = requests.get("https://weatherbit-v1-mashape.p.rapidapi.com/forecast/hourly",
                          headers={
