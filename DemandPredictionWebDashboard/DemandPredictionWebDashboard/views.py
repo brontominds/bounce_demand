@@ -27,19 +27,6 @@ def Checking_Null_values(df,column_name):
         column_name=df['column_name']
         return column_name
 
-    
-def validate(date_text):
-    try:
-        datetime.datetime.strptime(date_text, '%Y-%m-%d')
-        
-    except ValueError:
-        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
-        
-def validate_hour(hour):
-    try:
-        if (int(hour)<0)&(int(hour)>23):
-    except ValueError:
-        raise ValueError("Invalid value")
 
 @app.route('/')
 @app.route('/home')
@@ -53,10 +40,10 @@ def home():
 
 @app.route('/predict', methods = ['POST'])
 def predict():
-    
 
-    
-    
+
+   
+  
     df=weatherForecast()
     """Renders the contact page."""
     hour=int(request.form['hour'])
@@ -65,8 +52,12 @@ def predict():
  
     
     df.inputData('latlon',[12.9304,77.6784] ,location)
-    data=df.filterP(location,date,hour)
-   
+    try:
+        data=df.filterP(location,date,hour)
+    except AppError as e:
+        print(e)
+        print(e.err_code)
+    
    
 
     
