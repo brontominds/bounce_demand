@@ -38,41 +38,25 @@ class weatherForecast:
         self.holidays = pd.to_datetime(holidays['Date']).dt.date.values
         
     def filterP(self, place, date, hr):
-        import pandas as pd
-        import requests
-        import numpy as np
-        import datetime as dt
-        if(self.weather_forecast.empty):
-            print("Dataframe Empty")
-            return -1
-        
         if not place in list(self.input_data['Name']):
-            print("Not in input data yet, please add first")
-            print(list(self.input_data['Place']))
-            return
-        
-        date = dt.datetime.strptime(date, '%d-%B-%Y').date()
+            raise InvalidLocation("Location \'" + place +" \'not present in MasterList. Contact Admin for details")
+
+            
+        date = dt.datetime.strptime(date, '%Y-%m-%d').date()
         dattim = dt.datetime.combine(date, dt.time(hr, 30))
         
         ans = self.weather_forecast[(self.weather_forecast['place'] == place) & (self.weather_forecast['timestamp_local'] == dattim)]
         
         if(ans.shape[0] == 0):
-            print("No results found")
-            return -1
+            raise DateOutsideWeatherPredictionError("DateError: " + dt.datetime.strftime(date, '%Y-%m-%d') + ", outside range of weather prediction.")
         if ans.shape[0] > 1:
             print("Too many results(?)")
-            print(ans)
-            return -2
         
         return ans
     
         
         
     def inputData(self, typeloc, loc, nameofPlace='NA',hours = 48):
-        import datetime as dt
-        import pandas as pd
-        import requests
-        import numpy as np
         if not typeloc in ['latlon']:
             return 
         
@@ -104,10 +88,6 @@ class weatherForecast:
             
             
     def addDf(self):
-        import datetime as dt
-        import pandas as pd
-        import requests
-        import numpy as np
         if self.weather_forecast.empty:
             self.weather_forecast = self.temp.copy()
         else:
@@ -117,10 +97,6 @@ class weatherForecast:
         
         
     def getSeasonc(self, dateGive):
-        import datetime as dt
-        import pandas as pd
-        import requests
-        import numpy as np
         Y = 2000
         if isinstance(dateGive, dt.datetime):
             dateGive = dateGive.date()
@@ -132,10 +108,6 @@ class weatherForecast:
 
 
     def checkHolc(self, dateGive):
-        import datetime as dt
-        import pandas as pd
-        import requests
-        import numpy as np
         if isinstance(dateGive, dt.datetime):
             dateGive = dateGive.date()
 
@@ -148,7 +120,6 @@ class weatherForecast:
 
     
     def callAPI(self):
-        import requests
         if not self.ready:
             print("Not Reayd")
             return
@@ -164,10 +135,6 @@ class weatherForecast:
         
 
     def modifyDf(self, place):
-        import pandas as pd
-        import requests
-        import numpy as np
-        import datetime as dt
         self.temp['datetime'] = pd.to_datetime(self.temp['datetime'], format = "%Y-%m-%d:%H")
         self.temp['timestamp_local'] = pd.to_datetime(self.temp['timestamp_local'])
         self.temp['city'] = self.data['city_name']
@@ -190,9 +157,6 @@ class weatherForecast:
         self.temp['hour'] = self.temp['timestamp_local'].dt.hour
 
 
-    def displayReq(self):
-        import pandas as pd
-        import requests
-        import numpy as np
-        print(self.temp[['place','lat', 'lon', 'city','app_temp', 'timestamp_local', 'temp', 'rh', 'wind_spd', 'weather_code','season', 'season_code','dayofweek', 'workingday','holiday', 'year', 'month', 'day', 'hour']])
+    def retRequCol(self):
+        return ['place','lat', 'lon', 'city','app_temp', 'timestamp_local', 'temp', 'rh', 'wind_spd', 'weather_code','season', 'season_code','dayofweek', 'workingday','holiday', 'year', 'month', 'day', 'hour']
 
