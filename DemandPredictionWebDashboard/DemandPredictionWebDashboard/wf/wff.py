@@ -1,17 +1,6 @@
-class DateOutsideWeatherPredictionError(Exception):
-    pass
-
-class InvalidLocation(Exception):
-    pass
 
 class weatherForecast:
     def __init__(self, hours = 48):
-        
-        import pandas as pd
-        import requests
-        import numpy as np
-        import datetime as dt
-        import os, sys
         
         self.ready = False
         self.PARAMS = {
@@ -43,9 +32,11 @@ class weatherForecast:
         holidays = pd.read_csv(hFile)
         self.holidays = pd.to_datetime(holidays['Date']).dt.date.values
         
+        
+        
     def filterP(self, place, date, hr):
         if not place in list(self.input_data['Name']):
-            raise InvalidLocation("Location \'" + place +" \'not present in MasterList. Contact Admin for details")
+            raise AppError(1,"Location \'" + place +" \'not present in MasterList. Contact Admin for details")
 
             
         date = dt.datetime.strptime(date, '%Y-%m-%d').date()
@@ -54,9 +45,9 @@ class weatherForecast:
         ans = self.weather_forecast[(self.weather_forecast['place'] == place) & (self.weather_forecast['timestamp_local'] == dattim)]
         
         if(ans.shape[0] == 0):
-            raise DateOutsideWeatherPredictionError("DateError: " + dt.datetime.strftime(date, '%Y-%m-%d') + ", outside range of weather prediction.")
+            raise AppError(2,"DateError: " + dt.datetime.strftime(date, '%Y-%m-%d') + ", outside range of weather prediction.")
         if ans.shape[0] > 1:
-            raise ("Too many results(?)")
+            raise AppError("Too many results(?)")
         
         return ans
     
@@ -80,7 +71,7 @@ class weatherForecast:
             self.ready = False
 
             if not x.status_code == 200:
-                raise WebError("Invalid response code from API: ",x.status_code)
+                raise AppError(3,"Invalid response",x.status_code)
             self.data = x.json()
 
             from pandas.io.json import json_normalize
@@ -106,7 +97,7 @@ class weatherForecast:
         if isinstance(dateGive, dt.datetime):
             dateGive = dateGive.date()
         else:
-            raise TypeError("wrong Type Given")
+            raise TypeError("wrong Type Given, expected Date, got " + type(dateGive))
         dateGive = dateGive.replace(year=Y)
         return next((season,code) for start, end,season, fancy,code in self.seasons
                     if start <= dateGive <= end)
@@ -126,7 +117,7 @@ class weatherForecast:
     
     def callAPI(self):
         if not self.ready:
-            raise Error("No Input Data supplied")
+            raise AppError("Incorrect parameters or no parameters passed")
         
         r = requests.get("https://weatherbit-v1-mashape.p.rapidapi.com/forecast/hourly",
                          headers={
@@ -163,4 +154,3 @@ class weatherForecast:
 
     def retRequCol(self):
         return ['place','lat', 'lon', 'city','app_temp', 'timestamp_local', 'temp', 'rh', 'wind_spd', 'weather_code','season', 'season_code','dayofweek', 'workingday','holiday', 'year', 'month', 'day', 'hour']
-
