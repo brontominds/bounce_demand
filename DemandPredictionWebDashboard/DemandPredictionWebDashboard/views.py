@@ -73,7 +73,7 @@ try:
         combine_date_time=datetime.datetime.combine(date_1,hour_1)
         present = datetime.datetime.now()
                
-        if combine_date_time<present:
+        if combine_date_time<=present:
                raise AppError(2,"DateError: " + str(combine_date_time) + ", outside range of weather prediction.")
 
         
