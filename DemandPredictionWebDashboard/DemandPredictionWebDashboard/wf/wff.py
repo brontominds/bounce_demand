@@ -45,8 +45,9 @@ class weatherForecast:
         if not place in list(self.input_data['Name']):
             raise AppError(1,"Location \'" + place +" \'not present in MasterList. Contact Admin for details")
 
-            
-        date = dt.datetime.strptime(date, '%Y-%m-%d').date()
+        if(type(date) == str):
+            date = dt.datetime.strptime(date, '%Y-%m-%d').date()
+      
         dattim = dt.datetime.combine(date, dt.time(hr, 30))
         
         ans = self.weather_forecast[(self.weather_forecast['place'] == place) & (self.weather_forecast['timestamp_local'] == dattim)]
