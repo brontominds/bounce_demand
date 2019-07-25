@@ -5,7 +5,7 @@
 <div class="well">
     <h3>Bounce Demand Prediction - For illustration purpose only</h3>
     <h4>Powered by Brontominds</h4>
-    <hr/>
+    <hr />
     <form action="/predict" method="post">
         <div class="input-group">
             <span class="input-group-addon" style="width:200px; text-align:left">Holiday</span>
@@ -69,6 +69,20 @@
         </div>
         <br />
         <button type="submit" class="btn btn-success">Predict Demand</button>
+    </form>
+
+    <form action="/predictall" method="post">
+       
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Date</span>
+            <input id="date" type="text" class="form-control" name="date" placeholder="Date" value="{{tomorrow}}">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" style="width:200px; text-align:left">Location</span>
+            <input id="location" type="text" class="form-control" name="location" placeholder="Location" value="Bellandur, Bangalore">
+        </div>
+        <br />
+        <button type="submit" class="btn btn-success">Predict Demand for all hours</button>
     </form>
 </div>
 

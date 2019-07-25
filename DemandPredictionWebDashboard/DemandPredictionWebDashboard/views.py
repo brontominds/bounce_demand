@@ -134,6 +134,7 @@ def predict():
             message=e)
 
 
+
 @app.route('/about')
 def about():
         """Renders the about page."""
@@ -144,4 +145,7 @@ def about():
             message='Your application description page.'
         )
 
+@app.route('/predictall', methods = ['POST'])
+def predictall():
 
+    return
