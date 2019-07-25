@@ -162,5 +162,91 @@ def about():
 
 @app.route('/predictall', methods = ['POST'])
 def predictall():
+    try:
+        df=weatherForecast()
+        hour_list=[]
+        pre_list=[]
+        location=(request.form['location'])
 
-    return
+
+        df.inputData('latlon',[12.9304,77.6784] ,location)
+
+        for hour in range(0,3):
+        
+     
+            date= validate_date(request.form['date'])
+            date_1=datetime.datetime.strptime(date,'%Y-%m-%d').date()
+            hour_1=str(validate_hour(hour))
+            hour_1=datetime.datetime.strptime(hour_1, '%H').time()
+            combine_date_time=datetime.datetime.combine(date_1,hour_1)
+            present = datetime.datetime.now()
+
+            if combine_date_time<=present:
+                    raise AppError(2,"DateError: " + str(combine_date_time) + ", outside range of weather prediction.")
+
+
+           
+            data=df.filterP(location,date,hour)
+
+            print("df success")
+
+            params={
+                'holiday':Checking_Null_values(data,'holiday'),
+                'workingDay':Checking_Null_values(data,'workingday'),
+                'temp':Checking_Null_values(data,'temp'),
+                'atemp':Checking_Null_values(data,'app_temp'),
+                'humidity':Checking_Null_values(data,'rh'),
+                'windspeed':Checking_Null_values(data,'wind_spd'),
+                'season':Checking_Null_values(data,'season_code'),
+                'weather':Checking_Null_values(data,'weather_code'),
+                'year':Checking_Null_values(data,'year'),
+                'day':Checking_Null_values(data,'day'),
+                'hour':hour,
+                'dayofweek':Checking_Null_values(data,'dayofweek'),
+                'month':Checking_Null_values(data,'month')
+                }
+
+            url='http://127.0.0.1:5000/predict'
+
+            print("post start")
+            r = requests.post(url, data=params)
+            print(r.text)
+
+            data=r.json()
+            a = data['prediction']
+            #dataframe.insert(column='predicted_demand', value=column_values)
+            pre_list.append(a)
+            hour_list.append(hour)
+            
+            
+        dfHourlyPrediction=pd.DataFrame(hour_list,columns=['Hour'])
+        dfPredicteddemand=pd.DataFrame(pre_list,columns=['Predicted'])
+        dfHourlyPrediction=pd.concat((dfHourlyPrediction,dfPredicteddemand),axis=1)
+        print(dfHourlyPrediction.to_string())
+        
+        return render_template(
+            'contact.html',
+            title='Bronto Bounce Prediction',
+            year=datetime.datetime.now().year,
+            message='Predicted Demand',
+            demand=dfHourlyPrediction.to_string(),
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
+        )
+    except AppError as ae:
+        print (ae)
+        print("An app error occurred")
+        return render_template(
+            'contact.html',
+            title='Error',
+            year=datetime.datetime.now().year,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y"),
+            message=ae)
+    except Exception as e:
+        print (e)
+        return render_template(
+            'contact.html',
+            title='Error',
+            year=datetime.datetime.now().year,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y"),
+            message=e)
+        
