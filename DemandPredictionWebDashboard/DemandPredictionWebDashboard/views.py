@@ -26,20 +26,35 @@ def Checking_Null_values(df,column_name):
         column_name=df[column_name]
         return column_name
 def validate_date(dt):
-    from dateutil import parser
-    dt=parser.parse(dt)
-        
-    date=dt.strftime('%Y-%m-%d')
+    try:
+        from dateutil import parser
+        if dt==['^a-zA-Z']:
+            return render_template('contact.html')
+             
+        elif dt==['"!@#$%^&*()[]{};:,./<>?\|`~-=_+", " "']:
+            return render_template('contact.html')
+
+        else:
+            dt=parser.parse(dt)
+
+            date=dt.strftime('%Y-%m-%d')
+            return date
+    except ValueError:
+            raise ValueError("ValueError: " + str(dt) + ", invalid date.")
+    
     return date
 def validate_hour(hr):
-    if hr==['^a-zA-Z']:
-        return render_template('contact.html')
-    elif hr==['"!@#$%^&*()[]{};:,./<>?\|`~-=_+", " "']:
-        return render_template('contact.html')
-    elif int(hr)>23:
-        return render_template('contact.html')
-    else:
-        return int(hr)
+    try:
+        if hr==['^a-zA-Z']:
+            return render_template('contact.html')
+        elif hr==['"!@#$%^&*()[]{};:,./<>?\|`~-=_+", " "']:
+            return render_template('contact.html')
+        elif int(hr)>23:
+            return render_template('contact.html')
+        else:
+            return int(hr)
+    except ValueError:
+            raise ValueError("ValueError: " + str(hr) + ", invalid time")
 
 
 
