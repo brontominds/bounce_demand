@@ -53,6 +53,7 @@ try:
             'index.html',
             title='Home Page',
             year=datetime.datetime.now().year,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
         )
 
     @app.route('/predict', methods = ['POST'])
@@ -121,9 +122,10 @@ try:
         return render_template(
             'contact.html',
             title='Contact',
-            year=datetime.now().year,
+            year=datetime.datetime.now().year,
             message='Predicted Demand',
-            demand=a
+            demand=a,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
         )
 
 
@@ -139,12 +141,16 @@ try:
         )
 except AppError as ae:
     print (ae)
-
-
-
     render_template(
         'contact.html',
         title='Error',
         year=datetime.now().year,
         message=ae)
+except Exception as e:
+    print (e)
+    render_template(
+        'contact.html',
+        title='Error',
+        year=datetime.now().year,
+        message=e)
 
