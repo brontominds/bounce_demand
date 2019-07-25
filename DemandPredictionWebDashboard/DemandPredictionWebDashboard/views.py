@@ -138,8 +138,8 @@ try:
         )
 except AppError as ae:
     print (ae)
-    #WriteToLog(Date, Time, ae.err_code, ae)
-except ValueError as ve:
-    pass
-except Exception as e:
-    pass
+    render_template(
+        'contact.html',
+        title='Error',
+        year=datetime.now().year,
+        message=ae)
