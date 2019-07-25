@@ -8,46 +8,44 @@ from DemandPredictionWebDashboard import app
 import sys
 import os
 
-
-
 import requests
 import json
 import pandas as pd
 
-try:
-    wf=sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__))))
-    #print(sys.path[-1])
-    from wf import weatherForecast, AppError
+
+wf=sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__))))
+#print(sys.path[-1])
+from wf import weatherForecast, AppError
 
 
-    def Checking_Null_values(df,column_name):
-        flag=True
-        if df[column_name].isnull().values.any()==flag:
-             return render_template('contact.html')
-        else:
-            column_name=df[column_name]
-            return column_name
-    def validate_date(dt):
-        from dateutil import parser
-        dt=parser.parse(dt)
+def Checking_Null_values(df,column_name):
+    flag=True
+    if df[column_name].isnull().values.any()==flag:
+            return render_template('contact.html')
+    else:
+        column_name=df[column_name]
+        return column_name
+def validate_date(dt):
+    from dateutil import parser
+    dt=parser.parse(dt)
         
-        date=dt.strftime('%Y-%m-%d')
-        return date
-    def validate_hour(hr):
-        if hr==['^a-zA-Z']:
-            return render_template('contact.html')
-        elif hr==['"!@#$%^&*()[]{};:,./<>?\|`~-=_+", " "']:
-            return render_template('contact.html')
-        elif int(hr)>23:
-            return render_template('contact.html')
-        else:
-            return int(hr)
+    date=dt.strftime('%Y-%m-%d')
+    return date
+def validate_hour(hr):
+    if hr==['^a-zA-Z']:
+        return render_template('contact.html')
+    elif hr==['"!@#$%^&*()[]{};:,./<>?\|`~-=_+", " "']:
+        return render_template('contact.html')
+    elif int(hr)>23:
+        return render_template('contact.html')
+    else:
+        return int(hr)
 
 
 
-    @app.route('/')
-    @app.route('/home')
-    def home():
+@app.route('/')
+@app.route('/home')
+def home():
         """Renders the home page."""
         return render_template(
             'index.html',
@@ -56,17 +54,11 @@ try:
             tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
         )
 
-    @app.route('/predict', methods = ['POST'])
-    def predict():
-
-
-        print("started")
-
+@app.route('/predict', methods = ['POST'])
+def predict():
+    try:
         df=weatherForecast()
         
-        """Renders the contact page."""
-        
-           
         hour=validate_hour(request.form['hour'])
         date= validate_date(request.form['date'])
         date_1=datetime.datetime.strptime(date,'%Y-%m-%d').date()
@@ -76,7 +68,7 @@ try:
         present = datetime.datetime.now()
                
         if combine_date_time<=present:
-               raise AppError(2,"DateError: " + str(combine_date_time) + ", outside range of weather prediction.")
+                raise AppError(2,"DateError: " + str(combine_date_time) + ", outside range of weather prediction.")
 
         
         location=(request.form['location'])
@@ -85,7 +77,6 @@ try:
         df.inputData('latlon',[12.9304,77.6784] ,location)
         
         data=df.filterP(location,date,hour)
-       
 
 
         print("df success")
@@ -114,9 +105,6 @@ try:
 
         data=r.json()
 
-
-
-
         a = data['prediction']
 
         return render_template(
@@ -127,11 +115,27 @@ try:
             demand=a,
             tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
         )
+    except AppError as ae:
+        print (ae)
+        print("An app error occurred")
+        return render_template(
+            'contact.html',
+            title='Error',
+            year=datetime.datetime.now().year,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y"),
+            message=ae)
+    except Exception as e:
+        print (e)
+        return render_template(
+            'contact.html',
+            title='Error',
+            year=datetime.now().year,
+            tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y"),
+            message=e)
 
 
-
-    @app.route('/about')
-    def about():
+@app.route('/about')
+def about():
         """Renders the about page."""
         return render_template(
             'about.html',
@@ -139,18 +143,5 @@ try:
             year=datetime.now().year,
             message='Your application description page.'
         )
-except AppError as ae:
-    print (ae)
-    render_template(
-        'contact.html',
-        title='Error',
-        year=datetime.now().year,
-        message=ae)
-except Exception as e:
-    print (e)
-    render_template(
-        'contact.html',
-        title='Error',
-        year=datetime.now().year,
-        message=e)
+
 
