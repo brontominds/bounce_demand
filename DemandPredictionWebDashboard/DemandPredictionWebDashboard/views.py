@@ -49,7 +49,7 @@ def home():
         """Renders the home page."""
         return render_template(
             'index.html',
-            title='Home Page',
+            title='Bronto Bounce Prediction',
             year=datetime.datetime.now().year,
             tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y")
         )
@@ -109,7 +109,7 @@ def predict():
 
         return render_template(
             'contact.html',
-            title='Contact',
+            title='Bronto Bounce Prediction',
             year=datetime.datetime.now().year,
             message='Predicted Demand',
             demand=a,
@@ -129,7 +129,7 @@ def predict():
         return render_template(
             'contact.html',
             title='Error',
-            year=datetime.now().year,
+            year=datetime.datetime.now().year,
             tomorrow=(datetime.datetime.now()+datetime.timedelta(days=1)).strftime("%d-%B-%Y"),
             message=e)
 
