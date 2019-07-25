@@ -139,5 +139,13 @@ try:
         )
 except AppError as ae:
     print (ae)
+<<<<<<< HEAD
 
     
+=======
+    render_template(
+        'contact.html',
+        title='Error',
+        year=datetime.now().year,
+        message=ae)
+>>>>>>> b225604fde7efcc73bd13993584f7586ffde307d
