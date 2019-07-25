@@ -40,7 +40,7 @@ def validate_date(dt):
             date=dt.strftime('%Y-%m-%d')
             return date
     except ValueError:
-            raise ValueError("ValueError: " + str(dt) + ", invalid date:Should be in YYYY-mm-dd format")
+            raise ValueError("ValueError: " + str(dt) + ", invalid date:Should be in 'YYYY-mm-dd' format")
     
     return date
 def validate_hour(hr):
@@ -54,7 +54,7 @@ def validate_hour(hr):
         else:
             return int(hr)
     except ValueError:
-            raise ValueError("ValueError: " + str(hr) + ", invalid time:Should be in 24 hours format")
+            raise ValueError("ValueError: " + str(hr) + ", invalid time:Should be in '24 hours' format")
 
 
 
