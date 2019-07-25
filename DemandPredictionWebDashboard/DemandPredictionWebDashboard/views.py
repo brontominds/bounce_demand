@@ -13,6 +13,7 @@ import os
 import requests
 import json
 import pandas as pd
+
 try:
     wf=sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__))))
     #print(sys.path[-1])
@@ -138,8 +139,5 @@ try:
         )
 except AppError as ae:
     print (ae)
-    #WriteToLog(Date, Time, ae.err_code, ae)
-except ValueError as ve:
-    pass
-except Exception as e:
-    pass
+
+    
